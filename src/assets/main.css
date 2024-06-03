@@ -6,8 +6,65 @@ body {
     overflow: hidden;
 }
 
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #20303F;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #FFF;
+    }
+}
+
 #card {
     width: 100%;
     aspect-ratio: 3 / 2;
     display: block;
+}
+
+.loader {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    position: fixed;
+    z-index: 9;
+    display: none;
+}
+
+.custom-loader {
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+    display: grid;
+    border: 4px solid #0000;
+    border-radius: 50%;
+    border-color: #e4e4ed #0000;
+    animation: s6 1s infinite linear;
+}
+
+.custom-loader::before,
+.custom-loader::after {
+    content: '';
+    grid-area: 1/1;
+    margin: 2px;
+    border: inherit;
+    border-radius: 50%;
+}
+
+.custom-loader::before {
+    border-color: #12895f #0000;
+    animation: inherit;
+    animation-duration: 0.5s;
+    animation-direction: reverse;
+}
+
+.custom-loader::after {
+    margin: 8px;
+}
+
+@keyframes s6 {
+    100% {
+        transform: rotate(1turn);
+    }
 }
