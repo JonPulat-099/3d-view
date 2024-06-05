@@ -10,7 +10,7 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment'
-import { nextTick, onMounted } from 'vue'
+import { nextTick, onMounted, onUnmounted } from 'vue'
 
 export function useThreeRenderer() {
   var camera
@@ -55,14 +55,13 @@ export function useThreeRenderer() {
     loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
       const progress = itemsLoaded / itemsTotal
       nextTick(() => {
-          progressBarElem.style.transform = `scaleX(${progress})`
+        progressBarElem.style.transform = `scaleX(${progress})`
       })
     }
 
     new GLTFLoader(loadManager).load('models/v2/02.gltf', function (gltf) {
       model = gltf.scene
     })
-
 
     const environment = new RoomEnvironment(renderer)
     const pmremGenerator = new PMREMGenerator(renderer)
@@ -129,7 +128,24 @@ export function useThreeRenderer() {
     actionID = requestAnimationFrame(render)
   }
 
-  onMounted(async() => {
-    await init()
+  onMounted(() => {
+    init()
+
+    canvas.addEventListener('touchstart', (e) => {
+      isTouch = true
+      cancelAnimationFrame(actionID)
+    })
+    canvas.addEventListener('touchmove', (e) => {
+      isTouch = true
+      cancelAnimationFrame(actionID)
+    })
+    canvas.addEventListener('touchend', () => {
+      isTouch = false
+      requestAnimationFrame(render)
+    })
+  })
+  onUnmounted(() => {
+    renderer.setAnimationLoop(null)
+    window.removeEventListener('resize', onWindowResize)
   })
 }
