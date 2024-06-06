@@ -84,12 +84,12 @@ export function useThreeRenderer() {
 
     if (window.innerWidth < 1600) {
       fov = 38
-      cameraPosition = [1.4, 0, 2]
+      cameraPosition = [-0.1, 0, 2]
       targetPostion = [0, 0, 0]
       progressBarPosition = (window.innerWidth * 0.67) / 2 - 50 + 'px'
     } else {
       fov = 60
-      cameraPosition = [1.4, 0, 2]
+      cameraPosition = [-0.1, 0, 2]
       targetPostion = [0, -0.5, 0]
       progressBarPosition = window.innerHeight / 2 + 'px'
     }
@@ -115,12 +115,10 @@ export function useThreeRenderer() {
     render()
   }
 
-  function render(time) {
+  function render() {
     if (!isTouch && loadingElem.style.display == 'none') {
-      time *= 0.00055
-
       if (model && model.rotation) {
-        model.rotation.y = time
+        model.rotation.y += 0.005
       }
     }
 
