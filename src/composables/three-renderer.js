@@ -116,11 +116,10 @@ export function useThreeRenderer() {
     render()
   }
 
-  function render() {
+  function render(time) {
     if (!isTouch && loadingElem.style.display == 'none') {
-      // if (model && model.rotation) {
-      model.rotation.y += 0.007
-      // }
+      time *= 0.0007
+      model.rotation.y = time
     }
 
     renderer.render(scene, camera)
