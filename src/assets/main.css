@@ -23,12 +23,14 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 #loading .progress {
   margin: 1.5em;
   border: 1px solid #12895f;
-  width: 50vw;
+  width: 80vw;
   border-radius: 8px;
 }
+
 #loading .progressbar {
   margin: 2px;
   background: #12895f;

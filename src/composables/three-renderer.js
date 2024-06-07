@@ -73,6 +73,7 @@ export function useThreeRenderer() {
     controls.minDistance = 3
     controls.maxDistance = 3
     controls.target.set(...setPosition().targetPostion)
+    controls.touches.TWO = null
     controls.update()
 
     window.addEventListener('resize', onWindowResize)
