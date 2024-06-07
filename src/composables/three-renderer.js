@@ -20,7 +20,6 @@ export function useThreeRenderer() {
   var canvas
   var model
   var isTouch
-  var actionID
   var loadManager
   var loadingElem
   var progressBarElem
@@ -32,6 +31,7 @@ export function useThreeRenderer() {
     renderer = new WebGLRenderer({ antialias: true, canvas, alpha: true })
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth, window.innerWidth * 0.67)
+    renderer.setAnimationLoop(render)
     renderer.toneMapping = ACESFilmicToneMapping
     renderer.toneMappingExposure = 1
 
@@ -85,12 +85,12 @@ export function useThreeRenderer() {
 
     if (window.innerWidth < 1600) {
       fov = 38
-      cameraPosition = [1.6, -0.6, 2]
+      cameraPosition = [-0.2, -0.6, 2]
       targetPostion = [0, 0, 0]
       progressBarPosition = (window.innerWidth * 0.67) / 2 - 50 + 'px'
     } else {
       fov = 60
-      cameraPosition = [1.6, 0, 2]
+      cameraPosition = [-0.2, 0, 2]
       targetPostion = [0, -0.5, 0]
       progressBarPosition = window.innerHeight / 2 + 'px'
     }
@@ -112,18 +112,14 @@ export function useThreeRenderer() {
     controls.update()
 
     renderer.setSize(window.innerWidth, window.innerWidth * 0.67)
-
-    render()
   }
 
-  function render(time) {
+  function render() {
     if (!isTouch && loadingElem.style.display == 'none') {
-      time *= 0.0007
-      model.rotation.y = time
+      model.rotation.y += 0.009
     }
 
     renderer.render(scene, camera)
-    actionID = requestAnimationFrame(render)
   }
 
   onMounted(() => {
@@ -131,15 +127,12 @@ export function useThreeRenderer() {
 
     canvas.addEventListener('touchstart', (e) => {
       isTouch = true
-      cancelAnimationFrame(actionID)
     })
     canvas.addEventListener('touchmove', (e) => {
       isTouch = true
-      cancelAnimationFrame(actionID)
     })
     canvas.addEventListener('touchend', () => {
       isTouch = false
-      requestAnimationFrame(render)
     })
   })
   onUnmounted(() => {
