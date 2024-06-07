@@ -85,7 +85,7 @@ export function useThreeRenderer() {
 
     if (window.innerWidth < 1600) {
       fov = 38
-      cameraPosition = [-0.1, 0, 2]
+      cameraPosition = [-0.1, -0.6, 2]
       targetPostion = [0, 0, 0]
       progressBarPosition = (window.innerWidth * 0.67) / 2 - 50 + 'px'
     } else {
@@ -118,9 +118,9 @@ export function useThreeRenderer() {
 
   function render() {
     if (!isTouch && loadingElem.style.display == 'none') {
-      if (model && model.rotation) {
-        model.rotation.y += 0.005
-      }
+      // if (model && model.rotation) {
+      model.rotation.y += 0.007
+      // }
     }
 
     renderer.render(scene, camera)
