@@ -85,12 +85,12 @@ export function useThreeRenderer() {
 
     if (window.innerWidth < 1600) {
       fov = 38
-      cameraPosition = [-0.1, -0.6, 2]
+      cameraPosition = [1.6, -0.6, 2]
       targetPostion = [0, 0, 0]
       progressBarPosition = (window.innerWidth * 0.67) / 2 - 50 + 'px'
     } else {
       fov = 60
-      cameraPosition = [-0.1, 0, 2]
+      cameraPosition = [1.6, 0, 2]
       targetPostion = [0, -0.5, 0]
       progressBarPosition = window.innerHeight / 2 + 'px'
     }
