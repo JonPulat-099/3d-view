@@ -24,7 +24,7 @@ export function useThreeRenderer() {
   var loadingElem
   var progressBarElem
 
-  function init() {
+  function init(version) {
     canvas = document.getElementById('card')
     canvas.style.backgroundColor = 'transparent'
 
@@ -59,7 +59,7 @@ export function useThreeRenderer() {
       })
     }
 
-    new GLTFLoader(loadManager).load('models/v2/02.gltf', function (gltf) {
+    new GLTFLoader(loadManager).load(version, function (gltf) {
       model = gltf.scene
     })
 
@@ -123,7 +123,13 @@ export function useThreeRenderer() {
   }
 
   onMounted(() => {
-    init()
+    const versions = {
+      v2: 'models/v2/02.gltf',
+      v3: 'models/v3/444.gltf'
+    }
+    const urlParams = new URLSearchParams(window.location.search)
+    const version = urlParams.get('version') || 'v3'
+    init(versions[version])
 
     canvas.addEventListener('touchstart', (e) => {
       isTouch = true
