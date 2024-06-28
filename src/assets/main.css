@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "SF UI Display";
+  src: local('SF UI Display Regular'), local('SFUIDisplay-Medium'),
+    url('~static/fonts/sf/SFUIDisplay-Medium.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 html,
 body {
   width: 100%;
@@ -5,6 +14,7 @@ body {
   height: 100%;
   overflow: hidden;
   background-color: transparent;
+  font-family: 'SF UI Display', sans-serif;
 }
 
 #card {
