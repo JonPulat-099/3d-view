@@ -5,6 +5,7 @@ import {
   ACESFilmicToneMapping,
   PMREMGenerator,
   LoadingManager
+  // MeshStandardMaterial
 } from 'three'
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -23,6 +24,7 @@ export function useThreeRenderer() {
   var loadManager
   var loadingElem
   var progressBarElem
+  var percentElem
 
   function init(version) {
     canvas = document.getElementById('card')
@@ -44,6 +46,7 @@ export function useThreeRenderer() {
 
     loadingElem = document.querySelector('#loading')
     progressBarElem = loadingElem.querySelector('.progressbar')
+    percentElem = loadingElem.querySelector('.percent')
 
     loadManager.onLoad = () => {
       setTimeout(() => {
@@ -54,13 +57,32 @@ export function useThreeRenderer() {
 
     loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
       const progress = itemsLoaded / itemsTotal
+      console.log(`${progress * 100} %`)
       nextTick(() => {
         progressBarElem.style.transform = `scaleX(${progress})`
+        percentElem.innerHTML = `${Math.round(progress * 100)} %`
       })
     }
 
+    // const material = new MeshStandardMaterial({
+    //   // color: 0x000000,
+    //   // roughness: 0,
+    //   // metalness: 0.6
+    //   // emissive: 0x000000
+    // })
     new GLTFLoader(loadManager).load(version, function (gltf) {
       model = gltf.scene
+      // var count = 0
+      // gltf.scene.traverse((o) => {
+      //   console.log('counst -> ', count)
+      //   // if (o.isMesh && count == 1) {
+      //   //   console.log(1, o.material)
+      //   //   o.material.color = 0xff0000
+      //   //   o.material.roughness = 0
+      //   //   o.material.metalness = 0.6
+      //   // }
+      //   count++
+      // })
     })
 
     const environment = new RoomEnvironment(renderer)
@@ -125,10 +147,11 @@ export function useThreeRenderer() {
   onMounted(() => {
     const versions = {
       v2: 'models/v2/02.gltf',
-      v3: 'models/v3/444.gltf'
+      v3: 'models/v3/444.gltf',
+      v4: 'models/v4/666.gltf'
     }
     const urlParams = new URLSearchParams(window.location.search)
-    const version = urlParams.get('version') || 'v3'
+    const version = urlParams.get('version') || 'v4'
     init(versions[version])
 
     canvas.addEventListener('touchstart', (e) => {
