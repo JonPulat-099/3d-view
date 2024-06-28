@@ -60,7 +60,7 @@ body {
   border-radius: 300px;
   background-color: #3D9A73;
   transform-origin: top left;
-  transform: scaleX(0.4);
+  transform: scaleX(0);
   transition: all .2s linear;
   perspective: 1px;
 }
