@@ -27,79 +27,86 @@ export function useThreeRenderer() {
   var isError = true
 
   function init(version) {
-    canvas = document.getElementById('card')
-    canvas.style.backgroundColor = 'transparent'
+    try {
+      canvas = document.getElementById('card')
+      canvas.style.backgroundColor = 'transparent'
 
-    renderer = new WebGLRenderer({ antialias: true, canvas, alpha: true })
-    renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(window.innerWidth, window.innerWidth * 0.67)
-    renderer.setAnimationLoop(render)
-    renderer.toneMapping = LinearToneMapping
-    renderer.toneMappingExposure = 1
+      renderer = new WebGLRenderer({ antialias: true, canvas, alpha: true })
+      renderer.setPixelRatio(window.devicePixelRatio)
+      renderer.setSize(window.innerWidth, window.innerWidth * 0.67)
+      renderer.setAnimationLoop(render)
+      renderer.toneMapping = LinearToneMapping
+      renderer.toneMappingExposure = 1
 
-    camera = new PerspectiveCamera(setPosition().fov, 3 / 2, 0.25, 200)
-    camera.position.set(...setPosition().cameraPosition)
+      camera = new PerspectiveCamera(setPosition().fov, 3 / 2, 0.25, 200)
+      camera.position.set(...setPosition().cameraPosition)
 
-    scene = new Scene()
+      scene = new Scene()
 
-    loadManager = new LoadingManager()
+      loadManager = new LoadingManager()
 
-    loadingElem = document.querySelector('#loading')
-    progressBarElem = loadingElem.querySelector('.progressbar')
-    percentElem = loadingElem.querySelector('.percent')
+      loadingElem = document.querySelector('#loading')
+      progressBarElem = loadingElem.querySelector('.progressbar')
+      percentElem = loadingElem.querySelector('.percent')
 
-    loadManager.onLoad = (text) => {
-      console.log('load -> ', text)
-      if (isError) {
-        setTimeout(() => {
-          loadingElem.style.display = 'none'
-          scene.add(model)
-        }, 500)
-      } else {
-        const overlayElem = loadingElem.querySelector('.overlay')
-        const progressElem = loadingElem.querySelector('.progress')
-        overlayElem.style.filter = 'blur(0)'
-        progressElem.style.display = 'none'
-      }
-    }
-
-    loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
-      const progress = itemsLoaded / itemsTotal
-      nextTick(() => {
-        progressBarElem.style.transform = `scaleX(${progress})`
-        percentElem.innerHTML = `${Math.round(progress * 100)} %`
-      })
-    }
-
-    loadManager.onError = (e) => {
-      isError = false
-    }
-
-    new GLTFLoader(loadManager).load(version, function (gltf) {
-      gltf.scene.traverse((o) => {
-        if (o.isMesh) {
-          o.material.roughness = 0.35
-          o.material.metalness = 1
+      loadManager.onLoad = (text) => {
+        console.log('load -> ', text)
+        if (isError) {
+          setTimeout(() => {
+            loadingElem.style.display = 'none'
+            scene.add(model)
+          }, 500)
+        } else {
+          const overlayElem = loadingElem.querySelector('.overlay')
+          const progressElem = loadingElem.querySelector('.progress')
+          overlayElem.style.filter = 'blur(0)'
+          progressElem.style.display = 'none'
         }
+      }
+
+      loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
+        const progress = itemsLoaded / itemsTotal
+        nextTick(() => {
+          progressBarElem.style.transform = `scaleX(${progress})`
+          percentElem.innerHTML = `${Math.round(progress * 100)} %`
+        })
+      }
+
+      loadManager.onError = (e) => {
+        isError = false
+      }
+
+      new GLTFLoader(loadManager).load(version, function (gltf) {
+        gltf.scene.traverse((o) => {
+          if (o.isMesh) {
+            o.material.roughness = 0.35
+            o.material.metalness = 1
+          }
+        })
+        model = gltf?.scene
       })
-      model = gltf?.scene
-    })
 
-    const environment = new RoomEnvironment(renderer)
-    const pmremGenerator = new PMREMGenerator(renderer)
+      const environment = new RoomEnvironment(renderer)
+      const pmremGenerator = new PMREMGenerator(renderer)
 
-    scene.environment = pmremGenerator.fromScene(environment).texture
+      scene.environment = pmremGenerator.fromScene(environment).texture
 
-    controls = new OrbitControls(camera, canvas)
-    controls.addEventListener('change', render) // use if there is no animation loop
-    controls.minDistance = 3
-    controls.maxDistance = 3
-    controls.target.set(...setPosition().targetPostion)
-    controls.touches.TWO = null
-    controls.update()
+      controls = new OrbitControls(camera, canvas)
+      controls.addEventListener('change', render) // use if there is no animation loop
+      controls.minDistance = 3
+      controls.maxDistance = 3
+      controls.target.set(...setPosition().targetPostion)
+      controls.touches.TWO = null
+      controls.update()
 
-    window.addEventListener('resize', onWindowResize)
-    requestAnimationFrame(render)
+      window.addEventListener('resize', onWindowResize)
+      requestAnimationFrame(render)
+    } catch (e) {
+      const overlayElem = loadingElem.querySelector('.overlay')
+      const progressElem = loadingElem.querySelector('.progress')
+      overlayElem.style.filter = 'blur(0)'
+      progressElem.style.display = 'none'
+    }
   }
 
   function setPosition() {
@@ -155,15 +162,17 @@ export function useThreeRenderer() {
     const version = urlParams.get('version') || 'v4'
     init(versions[version])
 
-    canvas.addEventListener('touchstart', (e) => {
-      isTouch = true
-    })
-    canvas.addEventListener('touchmove', (e) => {
-      isTouch = true
-    })
-    canvas.addEventListener('touchend', () => {
-      isTouch = false
-    })
+    if (canvas) {
+      canvas.addEventListener('touchstart', (e) => {
+        isTouch = true
+      })
+      canvas.addEventListener('touchmove', (e) => {
+        isTouch = true
+      })
+      canvas.addEventListener('touchend', () => {
+        isTouch = false
+      })
+    }
   })
   onUnmounted(() => {
     renderer.setAnimationLoop(null)
