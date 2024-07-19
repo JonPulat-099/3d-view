@@ -24,6 +24,7 @@ export function useThreeRenderer() {
   var loadingElem
   var progressBarElem
   var percentElem
+  var isError = true
 
   function init(version) {
     canvas = document.getElementById('card')
@@ -47,32 +48,41 @@ export function useThreeRenderer() {
     progressBarElem = loadingElem.querySelector('.progressbar')
     percentElem = loadingElem.querySelector('.percent')
 
-    loadManager.onLoad = () => {
-      setTimeout(() => {
-        loadingElem.style.display = 'none'
-        scene.add(model)
-      }, 500)
+    loadManager.onLoad = (text) => {
+      console.log('load -> ', text)
+      if (isError) {
+        setTimeout(() => {
+          loadingElem.style.display = 'none'
+          scene.add(model)
+        }, 500)
+      } else {
+        const overlayElem = loadingElem.querySelector('.overlay')
+        const progressElem = loadingElem.querySelector('.progress')
+        overlayElem.style.filter = 'blur(0)'
+        progressElem.style.display = 'none'
+      }
     }
 
     loadManager.onProgress = (urlOfLastItemLoaded, itemsLoaded, itemsTotal) => {
       const progress = itemsLoaded / itemsTotal
-      console.log(`${progress * 100} %`)
       nextTick(() => {
         progressBarElem.style.transform = `scaleX(${progress})`
         percentElem.innerHTML = `${Math.round(progress * 100)} %`
       })
     }
 
+    loadManager.onError = (e) => {
+      isError = false
+    }
+
     new GLTFLoader(loadManager).load(version, function (gltf) {
-      model = gltf.scene
-      var count = 0
       gltf.scene.traverse((o) => {
         if (o.isMesh) {
           o.material.roughness = 0.35
           o.material.metalness = 1
         }
-        count++
       })
+      model = gltf?.scene
     })
 
     const environment = new RoomEnvironment(renderer)
@@ -127,7 +137,7 @@ export function useThreeRenderer() {
   }
 
   function render() {
-    if (!isTouch && loadingElem.style.display == 'none') {
+    if (!isTouch && loadingElem.style.display == 'none' && model) {
       model.rotation.y += 0.009
     }
 
@@ -138,7 +148,8 @@ export function useThreeRenderer() {
     const versions = {
       v2: 'models/v2/02.gltf',
       v3: 'models/v3/444.gltf',
-      v4: 'models/v4/888.gltf'
+      v4: 'models/v4/888.gltf',
+      error: 'models/v4/889.gltf'
     }
     const urlParams = new URLSearchParams(window.location.search)
     const version = urlParams.get('version') || 'v4'
