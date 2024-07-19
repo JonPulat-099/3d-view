@@ -2,10 +2,9 @@ import {
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
-  ACESFilmicToneMapping,
   PMREMGenerator,
-  LoadingManager
-  // MeshStandardMaterial
+  LoadingManager,
+  LinearToneMapping
 } from 'three'
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -34,7 +33,7 @@ export function useThreeRenderer() {
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth, window.innerWidth * 0.67)
     renderer.setAnimationLoop(render)
-    renderer.toneMapping = ACESFilmicToneMapping
+    renderer.toneMapping = LinearToneMapping
     renderer.toneMappingExposure = 1
 
     camera = new PerspectiveCamera(setPosition().fov, 3 / 2, 0.25, 200)
@@ -64,25 +63,16 @@ export function useThreeRenderer() {
       })
     }
 
-    // const material = new MeshStandardMaterial({
-    //   // color: 0x000000,
-    //   // roughness: 0,
-    //   // metalness: 0.6
-    //   // emissive: 0x000000
-    // })
     new GLTFLoader(loadManager).load(version, function (gltf) {
       model = gltf.scene
-      // var count = 0
-      // gltf.scene.traverse((o) => {
-      //   console.log('counst -> ', count)
-      //   // if (o.isMesh && count == 1) {
-      //   //   console.log(1, o.material)
-      //   //   o.material.color = 0xff0000
-      //   //   o.material.roughness = 0
-      //   //   o.material.metalness = 0.6
-      //   // }
-      //   count++
-      // })
+      var count = 0
+      gltf.scene.traverse((o) => {
+        if (o.isMesh) {
+          o.material.roughness = 0.35
+          o.material.metalness = 1
+        }
+        count++
+      })
     })
 
     const environment = new RoomEnvironment(renderer)
@@ -112,7 +102,7 @@ export function useThreeRenderer() {
       progressBarPosition = (window.innerWidth * 0.67) / 2 - 50 + 'px'
     } else {
       fov = 60
-      cameraPosition = [-0.2, 0, 2]
+      cameraPosition = [0.68, -0.9, 2.9]
       targetPostion = [0, -0.5, 0]
       progressBarPosition = window.innerHeight / 2 + 'px'
     }
@@ -148,7 +138,7 @@ export function useThreeRenderer() {
     const versions = {
       v2: 'models/v2/02.gltf',
       v3: 'models/v3/444.gltf',
-      v4: 'models/v4/666.gltf'
+      v4: 'models/v4/888.gltf'
     }
     const urlParams = new URLSearchParams(window.location.search)
     const version = urlParams.get('version') || 'v4'
